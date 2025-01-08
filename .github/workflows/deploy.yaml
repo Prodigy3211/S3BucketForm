@@ -1,7 +1,11 @@
 name: Application Deploy
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
 
 jobs:
   Dev_Deploy:
