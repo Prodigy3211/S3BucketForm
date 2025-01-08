@@ -8,7 +8,7 @@ resource "aws_ecs_cluster" "greatnight-{{ env }}-cluster" {
 }
 
 resource "aws_ecs_cluster_capacity_providers" "greatnight-{{ env }}-capacity-provider" {
-  cluster_name = aws_ecs_cluster.{{ env }}-cluster.name
+  cluster_name = aws_ecs_cluster.greatnight-{{ env }}-cluster.name
 
   capacity_providers = ["FARGATE", "FARGATE_SPOT"]
 
