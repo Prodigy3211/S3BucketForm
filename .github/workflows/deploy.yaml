@@ -1,0 +1,75 @@
+name: Application Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  Dev_Deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4.2.2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5.3.0
+        with:
+          python-version: '3.11'
+
+      - name: Create and activate virtual environment
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install boto3 jinja2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3.1.2
+        with:
+          terraform_version: 1.9.7
+
+      - name: Build and Push Docker Image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: flask-app
+          ECR_REGISTRY_PATH: 891377296006.dkr.ecr.us-east-1.amazonaws.com
+        run: |          
+          docker build \
+            -t ${ECR_REGISTRY_PATH}/${ECR_REPOSITORY}:latest \
+            -t ${ECR_REGISTRY_PATH}/${ECR_REPOSITORY}:${commit_id} .
+        working-directory: application
+
+      - name: Generate tf
+        env:
+          TF_VARS_FILE: 'infrastructure/terraform/app.tfvars'
+        run: python infrastructure/terraform/python/render_templates.py
+
+      - name: Update container definition
+        env:
+          TF_VARS_FILE: 'infrastructure/terraform/app.tfvars'
+        run: python infrastructure/terraform/python/update_container_definition.py
+
+      - name: Run Terraform
+        run: |
+          terraform init
+          terraform fmt
+          terraform validate 
+          terraform plan -var-file="app.tfvars"
+          terraform apply -var-file="app.tfvars" -auto-approve
+        working-directory: infrastructure/terraform
+
+      - name: Wait for ECS Service Stability
+        run: aws ecs wait services-stable --cluster app-cluster --services greatnight-app-service

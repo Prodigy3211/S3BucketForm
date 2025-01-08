@@ -1,0 +1,10 @@
+env = "app"
+ecr_repo = "flask-app"
+desired_count = 1
+cpu = 2
+cpu_str = "2048"
+memory = 4096
+memory_str = "4096"
+domain_name = "ads.greatnight.us"
+zone_id = "Z0835597M670XLSCIDX1"
+certificate_arn = "arn:aws:acm:us-east-1:891377296006:certificate/c2a06cb8-e36b-41a4-8d96-f58b633059ad"

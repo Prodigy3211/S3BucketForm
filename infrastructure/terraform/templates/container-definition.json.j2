@@ -1,0 +1,26 @@
+[
+    {
+        "name": "app-{{ env }}",
+        "image": "891377296006.dkr.ecr.us-east-1.amazonaws.com/{{ ecr_repo }}@sha_value",
+        "cpu": {{ cpu }},
+        "memory": {{ memory }},
+        "essential": true,
+        "portMappings": [
+            {
+                "containerPort": 5000,
+                "hostPort": 5000
+            }
+        ],
+        "environment": [
+        ],
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+                "awslogs-create-group": "true",
+                "awslogs-group": "/ecs/frontend/flask-app-logs-{{ env }}",
+                "awslogs-region": "us-east-1",
+                "awslogs-stream-prefix": "ecs"
+            }
+        }
+    }
+]

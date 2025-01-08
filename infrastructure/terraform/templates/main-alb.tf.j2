@@ -1,0 +1,57 @@
+module "greatnight-{{ env }}-alb" {
+  source             = "../modules/alb"
+  alb_name           = "greatnight-{{ env }}"
+  subnet_ids         = [data.aws_subnet.subnet-1.id, data.aws_subnet.subnet-2.id, data.aws_subnet.subnet-3.id, data.aws_subnet.subnet-4.id , data.aws_subnet.subnet-5.id ,data.aws_subnet.subnet-6.id]
+  security_group_ids = [aws_security_group.greatnight-{{ env }}-alb-sg.id]
+}
+
+
+resource "aws_lb_listener" "greatnight-{{ env }}-https" {
+  load_balancer_arn = module.greatnight-{{ env }}-alb.alb_arn
+  port              = 443
+  protocol          = "HTTPS"
+  certificate_arn   = var.certificate_arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.greatnight-{{ env }}-tg.arn
+  }
+}
+
+resource "aws_lb_listener" "greatnight-{{ env }}-http" {
+  load_balancer_arn = module.greatnight-{{ env }}-alb.alb_arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+resource "aws_lb_target_group" "greatnight-{{ env }}-tg" {
+  name        = "greatnight-{{ env }}-tg"
+  port        = 3000
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
+  stickiness {
+    type            = "lb_cookie"
+    enabled         = true
+    cookie_duration = 86400
+  }
+  health_check {
+    healthy_threshold   = 2
+    interval            = 45
+    matcher             = "200-399"
+    path                = "/health"
+    port                = 3000
+    protocol            = "HTTP"
+    timeout             = 30
+    unhealthy_threshold = 5
+  }
+}

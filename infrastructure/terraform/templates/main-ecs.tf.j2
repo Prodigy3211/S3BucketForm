@@ -1,0 +1,61 @@
+resource "aws_ecs_cluster" "greatnight-{{ env }}-cluster" {
+  name = "{{ env }}-cluster"
+
+  setting {
+    name  = "containerInsights"
+    value = "disabled"
+  }
+}
+
+resource "aws_ecs_cluster_capacity_providers" "greatnight-{{ env }}-capacity-provider" {
+  cluster_name = aws_ecs_cluster.{{ env }}-cluster.name
+
+  capacity_providers = ["FARGATE", "FARGATE_SPOT"]
+
+  default_capacity_provider_strategy {
+    capacity_provider = "FARGATE"
+  }
+}
+
+resource "aws_ecs_task_definition" "greatnight-{{ env }}-task-definition" {
+    family                   = "greatnight-{{ env }}-task-definition"
+    task_role_arn            = aws_iam_role.ecs_role.arn
+    execution_role_arn       = aws_iam_role.ecs_role.arn
+    network_mode             = "awsvpc"
+    container_definitions    = file("container-definition.json")
+    requires_compatibilities = ["FARGATE"]
+    cpu                      = {{ cpu_str }}
+    memory                   = {{ memory_str }}
+    runtime_platform {
+      operating_system_family = "LINUX"
+      cpu_architecture        = "X86_64"
+    }
+  }
+  
+  resource "aws_ecs_service" "greatnight-{{ env }}-service" {
+    name            = "greatnight-{{ env }}-service"
+    cluster         = aws_ecs_cluster.{{ env }}-cluster.arn
+    task_definition = aws_ecs_task_definition.greatnight-{{ env }}-task-definition.arn
+    desired_count   = {{ desired_count }}
+  
+    capacity_provider_strategy {
+      capacity_provider = "FARGATE"
+      weight            = 1
+    }
+  
+    network_configuration {
+      subnets          = var.subnet_ids
+      security_groups  = [aws_security_group.greatnight-{{ env }}-tasks-sg.id]
+      assign_public_ip = true
+    }
+  
+    load_balancer {
+      target_group_arn = aws_lb_target_group.greatnight-{{ env }}-tg.arn
+      container_name   = "app-{{ env }}"
+      container_port   = 3000
+    }
+  }
+  
+
+
+  
