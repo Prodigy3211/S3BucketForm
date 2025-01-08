@@ -40,5 +40,5 @@ resource "aws_iam_role" "task_role" {
 
 resource "aws_iam_role_policy_attachment" "task_role_policy" {
   role       = aws_iam_role.task_role.name
-  policy_arn = "arn:aws:iam::aws:policy/S3FullAccess"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
