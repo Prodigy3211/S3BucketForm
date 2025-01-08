@@ -34,7 +34,7 @@ resource "aws_ecs_task_definition" "greatnight-{{ env }}-task-definition" {
   
   resource "aws_ecs_service" "greatnight-{{ env }}-service" {
     name            = "greatnight-{{ env }}-service"
-    cluster         = aws_ecs_cluster.{{ env }}-cluster.arn
+    cluster         = aws_ecs_cluster.greatnight-{{ env }}-cluster.arn
     task_definition = aws_ecs_task_definition.greatnight-{{ env }}-task-definition.arn
     desired_count   = {{ desired_count }}
   
@@ -52,7 +52,7 @@ resource "aws_ecs_task_definition" "greatnight-{{ env }}-task-definition" {
     load_balancer {
       target_group_arn = aws_lb_target_group.greatnight-{{ env }}-tg.arn
       container_name   = "app-{{ env }}"
-      container_port   = 3000
+      container_port   = 5000
     }
   }
   
