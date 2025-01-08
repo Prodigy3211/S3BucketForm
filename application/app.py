@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import boto3
 import os
 
@@ -6,6 +6,11 @@ app = Flask(__name__)
 
 # Initialize the S3 client without credentials (will use task role)
 s3 = boto3.client('s3')
+
+
+@app.route('/health')
+def health():
+    return jsonify({"status": "healthy!!!!!"})
 
 
 @app.route('/')
