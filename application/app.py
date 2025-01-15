@@ -22,7 +22,7 @@ def index():
 def upload():
     if "file" not in request.files:
         return "No file part"
-    file = request.files["file"]
+    file = request.files["file"] 
     if file.filename == "":
         return "No selected file"
 
@@ -38,20 +38,20 @@ def upload():
         except Exception as e:
             return f"Error uploading file: {str(e)}"
 
-def sendFormData():
+# def sendFormData():
     
-    if "file" not in request.files:
-        return "No file part"
-    file = request.files["file"]
-    if file.filename == "":
-        return "No selected file"
+#     if "file" not in request.files:
+#         return "No file part"
+#     file = request.files["file"]
+#     if file.filename == "":
+#         return "No selected file"
     
     #get adspeed key
     if file:
         try:
             adspeedEndpoint.upload_fileobj(file, file.filename)
             adspeed = os.getenv('ADSPEED_KEY')
-            file_URL = f"https://api.adspeed.com/"
+            file_URL = f"https://api.adspeed.com/.adspeed"
             return f"Uploaded to Adspeed!"
         except Exception as e:
             return f"Error"

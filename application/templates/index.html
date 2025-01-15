@@ -2,18 +2,35 @@
 <html lang="eng">
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Advertisement Upload</title>
+        <link rel="stylesheet" href="index.css">
     </head>
     <body>
+        <div class="fullForm">
+        <div class="header">
         <h1>GreatNight Advertisement Request</h1>
+        </div>
+        <div class="instructions">
         <p>Please fill out the form below and our approval team will review your advertisement. 
             If you have any questions or concerns email support@greatnight.us</p>
+        </div>
+        <div class="formFields">
         <form action="/upload" method="post" enctype="multipart/form-data">
+            <div>
+            <label>Business Name</label>
             <input type="text" placeholder="Business Name">
-            <label>Description</label>
-            <textarea></textarea>
+            </div>
+            <div><label>Description</label>
+            <br><textarea></textarea>
+            </div>
+            <div>
+            <label>Upload Image (Jpeg)</label>
             <input type="file" name="file">
             <button type="submit">Submit</button>
+            </div>
         </form>
+        </div>
+        </div>
     </body>
 </html>

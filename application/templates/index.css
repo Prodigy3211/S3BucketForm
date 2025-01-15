@@ -1,0 +1,22 @@
+.fullForm{
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    border: solid gray 1rem;
+    margin: 100px 50px 250px 50px;
+    padding: 15px 50px 15px 30px;
+}
+
+.header{
+    border: solid salmon 2px;
+}
+
+.instructions{
+    border: solid salmon 2px;
+}
+
+.formFields{
+    border: solid salmon 2px;
+    display: flex;
+    flex-flow: column;
+}
