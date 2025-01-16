@@ -34,10 +34,6 @@ def upload():
         s3.upload_fileobj(file, bucket_name, file.filename)
         aws_region = os.getenv('AWS_REGION', 'us-east-1')
         file_URL = f"https://{bucket_name}.s3.{aws_region}.amazonaws.com/{file.filename}"
-        return f"Uploaded Successfully! URL: {file_URL}"
-    except Exception as e:
-        return f"Error uploading file: {str(e)}"
-            
         form_data = {
             "file_url": file_URL,
             "adspeed_key" : ADSPEED_KEY,
@@ -49,9 +45,13 @@ def upload():
             return f"Uploaded Successfully to S3 and adSpeed! Adspeed Response: {adspeed_response}"
         else:
             return f"Uploaded to S3 but Adspeed upload failed."
+
+        
     except Exception as e:
         return f"Error uploading file: {str(e)}"
-
+            
+        
+   
 def send_to_adspeed(data):
 
     try: 
