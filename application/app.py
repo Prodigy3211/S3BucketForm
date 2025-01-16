@@ -55,14 +55,14 @@ def upload():
 def send_to_adspeed(data):
 
     try: 
-        response = requests.post(adspeedEndpoint, json=data, headers = {"Authorization": f"Bearer {ADSPEED_KEY}"})
+        response = request.post(adspeedEndpoint, json=data, headers = {"Authorization": f"Bearer {ADSPEED_KEY}"})
 
         if response.status_code == 200:
             return response.json()
         else:
             print(f"Adspeed API Error: {response.status_code}, {response.text}")
         return None
-    except requests.RequestException as e:
+    except request.RequestException as e:
         print(f"Error communicating with Adspeed: {e}")
     return None
 
